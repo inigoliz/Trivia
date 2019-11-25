@@ -1,5 +1,6 @@
 import subprocess
-
+from PySide2.QtWidgets import QMainWindow, QPushButton
+import sys
 
 class ScreenReader():
 
@@ -36,17 +37,5 @@ class ScreenReader():
 
 
 def run():
+    
     screen = ScreenReader()
-
-    # take a screenshot
-    screen.shot()
-
-    # read the question and answers
-    #screen.read()
-
-    # Get the results of the search
-    #screen.search()
-
-    # Print the results to console
-    #screen.show()
-
