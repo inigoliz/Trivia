@@ -106,3 +106,4 @@ venv.bak/
 # OUR FILES:
 .DS_Store
 /.screenshots/*.png
+/.vscode
