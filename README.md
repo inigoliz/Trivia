@@ -14,4 +14,4 @@ pip install -r requirements.txt
 
 To make it work, you need to have **Android Design Bridge**
 
-![Installation](https://www.xda-developers.com/install-adb-windows-macos-linux/)
+[Installation](https://www.xda-developers.com/install-adb-windows-macos-linux/)
