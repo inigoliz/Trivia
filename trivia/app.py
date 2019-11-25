@@ -8,14 +8,9 @@ class ScreenReader():
         Gets the screenshot from the connected android using
         adb shell command
         """
-        # Generate a file identifier
-        filename = "dsfsfsd"
-
         # Execute the screenshot command and save it in temp
-        subprocess.run([f'adb exec-out screencap -p > temp/{filename}.png'])
-
-        self.filename = filename
-
+        subprocess.run(f"adb exec-out screencap -p > .screenshots/test.png",
+                       shell=True)
 
     def read(self):
         """ From the filename, read the question and the answers """
@@ -47,11 +42,11 @@ def run():
     screen.shot()
 
     # read the question and answers
-    screen.read()
+    #screen.read()
 
     # Get the results of the search
-    screen.search()
+    #screen.search()
 
     # Print the results to console
-    screen.show()
+    #screen.show()
 
