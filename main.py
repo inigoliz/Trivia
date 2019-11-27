@@ -3,12 +3,18 @@ from PySide2 import QtCore, QtWidgets, QtGui
 from pyqtgraph import BarGraphItem, plot, PlotWidget
 from trivia import solver
 
+
 class Window(QtWidgets.QWidget):
+    """
+    The Window class is in charge of drawing a GUI, receiving the data from the actual
+    solver, and display it.
+    """
+
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
 
-        self.setFixedSize(QtCore.QSize(640,450))
-        self.setWindowTitle('Solver')
+        self.setFixedSize(QtCore.QSize(640, 450))
+        self.setWindowTitle('Trivia Solver')
 
         self.solve_button = QtWidgets.QPushButton("Solve")
         self.solve_button.setDefault(True)
@@ -16,11 +22,12 @@ class Window(QtWidgets.QWidget):
         self.save_button.setFixedWidth(120)
         self.clear_button = QtWidgets.QPushButton('Clear')
         self.clear_button.setFixedWidth(120)
-        self.screenshot = QtWidgets.QLabel("This will be a 3 column graph and maybe a small preview of the screenshot")
+        self.screenshot = QtWidgets.QLabel(
+            "This will be a 3 column graph and maybe a small preview of the screenshot")
         self.screenshot.setWordWrap(True)
         self.screenshot.setFixedWidth(200)
         self.screenshot.setAlignment(QtCore.Qt.AlignCenter)
-        
+
         text_recognition_form = QtWidgets.QFormLayout()
         text_recognition_form.setAlignment(QtCore.Qt.AlignTop)
         self.question_text = QtWidgets.QTextEdit()
@@ -61,12 +68,12 @@ class Window(QtWidgets.QWidget):
         layout.addLayout(buttons_layout)
         self.setLayout(layout)
 
+        # Actions performed:
         self.solve_button.clicked.connect(self.run_solver)
         self.save_button.clicked.connect(self.save_to_samples)
         self.clear_button.clicked.connect(self.clear_outputs)
 
         self.s = None
-
 
     def clear_outputs(self):
         self.screenshot.clear()
@@ -82,26 +89,25 @@ class Window(QtWidgets.QWidget):
 
         self.s = solver.ScreenManager()
         self.progress_bar.setValue(5)
-        
+
         self.s.shot()
         self.progress_bar.setValue(30)
 
-        # Show the screenshot in display
-        pixmap = QtGui.QPixmap(self.s.filepath)
-        pixmap = pixmap.scaledToHeight(370, aspectMode = QtCore.Qt.KeepAspectRatio)
-        self.screenshot.setPixmap(pixmap)
-        self.progress_bar.setValue(35)
+        recognition = self.s.read()
 
-        # recognition = self.s.read()
-        # TODO
-        recognition = {'q':'this is the question', 'a1':'first answer', 'a2':'second anwer', 'a3':'third answer' }
-        self.progress_bar.setValue(60)
-
-        # Show the results in the gui
+        # Show the results in the GUI
         self.question_text.setText(recognition['q'])
         self.answer1_text.setText(recognition['a1'])
         self.answer2_text.setText(recognition['a2'])
         self.answer3_text.setText(recognition['a3'])
+        self.progress_bar.setValue(35)
+
+        self.progress_bar.setValue(60)
+
+        # Show the screenshot in display
+        pixmap = QtGui.QPixmap(self.s.filepath)
+        pixmap = pixmap.scaledToHeight(370, aspectMode=QtCore.Qt.KeepAspectRatio)
+        self.screenshot.setPixmap(pixmap)
         self.progress_bar.setValue(65)
 
         # Scrap the internet
@@ -116,7 +122,7 @@ class Window(QtWidgets.QWidget):
             self.s.save_to_samples()
 
     def plot(self):
-        y = [100,400,240]
+        y = [100, 400, 240]
         x = [1, 2, 3]
         bars = BarGraphItem(x=x, height=y, width=0.6)
         self.chart.addItem(bars)
@@ -127,11 +133,13 @@ class Window(QtWidgets.QWidget):
             self.s.clear_screenshot_dir()
 
         self.close()
+
+
 if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
 
-    widget = Window()
+    widget = Window()  # No input args??
     widget.show()
 
     sys.exit(app.exec_())
