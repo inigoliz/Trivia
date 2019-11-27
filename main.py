@@ -3,6 +3,7 @@ from PySide2 import QtCore, QtWidgets, QtGui
 from pyqtgraph import BarGraphItem, plot, PlotWidget
 from trivia import solver
 
+languajes = ['eng', 'spa', 'dan', 'swe', 'nor']
 
 class Window(QtWidgets.QWidget):
     """
@@ -19,17 +20,18 @@ class Window(QtWidgets.QWidget):
         self.solve_button = QtWidgets.QPushButton("Solve")
         self.solve_button.setDefault(True)
         self.save_button = QtWidgets.QPushButton('Save to samples')
-        self.save_button.setFixedWidth(120)
         self.clear_button = QtWidgets.QPushButton('Clear')
-        self.clear_button.setFixedWidth(120)
         self.screenshot = QtWidgets.QLabel(
             "This will be a 3 column graph and maybe a small preview of the screenshot")
         self.screenshot.setWordWrap(True)
-        self.screenshot.setFixedWidth(200)
         self.screenshot.setAlignment(QtCore.Qt.AlignCenter)
 
         text_recognition_form = QtWidgets.QFormLayout()
         text_recognition_form.setAlignment(QtCore.Qt.AlignTop)
+        self.language_combobox = QtWidgets.QComboBox()
+        self.language_combobox.addItems(['English', 'Spanish', 'Danish', 'Swedish', 'Norweigan'])
+        self.language_combobox.currentIndexChanged.connect(self.language_changed)
+        text_recognition_form.addRow(self.language_combobox)
         self.question_text = QtWidgets.QTextEdit()
         self.question_text.setReadOnly(True)
         self.question_text.setMaximumHeight(100)
@@ -65,6 +67,7 @@ class Window(QtWidgets.QWidget):
         buttons_layout.addWidget(self.solve_button)
         buttons_layout.addWidget(self.clear_button)
         buttons_layout.addWidget(self.save_button)
+        buttons_layout.setAlignment(QtCore.Qt.AlignRight)
         layout.addLayout(buttons_layout)
         self.setLayout(layout)
 
@@ -74,6 +77,12 @@ class Window(QtWidgets.QWidget):
         self.clear_button.clicked.connect(self.clear_outputs)
 
         self.s = None
+        self.r = solver.Reader(lang='eng')
+
+    def language_changed(self):
+        index = self.language_combobox.currentIndex()
+        print(languajes[index])
+        self.r.set_language(languajes[index])
 
     def clear_outputs(self):
         self.screenshot.clear()
@@ -93,7 +102,7 @@ class Window(QtWidgets.QWidget):
         self.s.shot()
         self.progress_bar.setValue(30)
 
-        recognition = self.s.read()
+        recognition = self.r.read(self.s.filepath)
 
         # Show the results in the GUI
         self.question_text.setText(recognition['q'])
