@@ -3,7 +3,7 @@ from time import time
 import pytesseract as pys  # OCR
 
 t0 = time()
-im = Image.open("question_1.png")
+im = Image.open("../samples/spain_1/sample_trivia_1.jpeg")
 
 box_q = (130, 410, 950, 1040)
 q = im.crop(box_q)
