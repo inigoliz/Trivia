@@ -81,7 +81,6 @@ class Window(QtWidgets.QWidget):
 
     def language_changed(self):
         index = self.language_combobox.currentIndex()
-        print(languajes[index])
         self.r.set_language(languajes[index])
 
     def clear_outputs(self):
