@@ -5,6 +5,7 @@ import os
 from shutil import rmtree, copy
 from PIL import Image
 import pytesseract as pys  # OCR
+import csv
 
 directory = '.screenshots'
 sample_directory = 'samples'
@@ -52,30 +53,7 @@ class ScreenManager():
             new_path = os.path.join(sample_directory, self.filename)
             copy(self.filepath, new_path)
 
-class Reader():
-    def __init__(self, filepath=None, lang='eng'):
-
-        self.width = 900
-
-        # add some values as defaukts
-        self.set_question_box(410,1040)
-        self.set_a1_box(1280,1340)
-        self.set_a2_box(1465, 1525)
-        self.set_a3_box(1650, 1710)
-
-        self.lang = lang
-    
-    def set_question_box(self, top, bottom):
-        self.question_box = (0, top, self.width, bottom)
-    
-    def set_a1_box(self, top, bottom):
-        self.a1_box = (0, top, self.width, bottom)
-
-    def set_a2_box(self, top, bottom):
-        self.a2_box = (0, top, self.width, bottom)
-
-    def set_a3_box(self, top, bottom):
-        self.a3_box = (0, top, self.width, bottom)
+class Reader():  
     
     def read(self, filepath):
         self.image = Image.open(filepath)
@@ -92,8 +70,12 @@ class Reader():
     def read_box(self, section):
         return pys.image_to_string(self.image.crop(section), lang=self.lang)
 
-    def set_language(self, lang):
-        self.lang = lang
+    def set_configuration(self, d):
+        self.lang = d[2]
+        self.question_box = tuple(d[3:7])
+        self.a1_box = tuple(d[7:11])
+        self.a2_box = tuple(d[11:15])
+        self.a3_box = tuple(d[15:19])
 
     def get_results(self):
         if hasattr(self, 'results'):

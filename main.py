@@ -2,14 +2,16 @@ import sys
 from PySide2 import QtCore, QtWidgets, QtGui
 from pyqtgraph import BarGraphItem, plot, PlotWidget
 from trivia import solver
-
-languajes = ['eng', 'spa', 'dan', 'swe', 'nor']
+import csv
 
 class Window(QtWidgets.QWidget):
     """
     The Window class is in charge of drawing a GUI, receiving the data from the actual
     solver, and display it.
     """
+
+    with open('config.csv') as csv_file:
+        configurations = list(csv.reader(csv_file, delimiter=','))
 
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
@@ -21,17 +23,16 @@ class Window(QtWidgets.QWidget):
         self.solve_button.setDefault(True)
         self.save_button = QtWidgets.QPushButton('Save to samples')
         self.clear_button = QtWidgets.QPushButton('Clear')
-        self.screenshot = QtWidgets.QLabel(
-            "This will be a 3 column graph and maybe a small preview of the screenshot")
+        self.screenshot = QtWidgets.QLabel()
         self.screenshot.setWordWrap(True)
         self.screenshot.setAlignment(QtCore.Qt.AlignCenter)
 
         text_recognition_form = QtWidgets.QFormLayout()
         text_recognition_form.setAlignment(QtCore.Qt.AlignTop)
-        self.language_combobox = QtWidgets.QComboBox()
-        self.language_combobox.addItems(['English', 'Spanish', 'Danish', 'Swedish', 'Norweigan'])
-        self.language_combobox.currentIndexChanged.connect(self.language_changed)
-        text_recognition_form.addRow(self.language_combobox)
+        self.configuration_combobox = QtWidgets.QComboBox()
+        self.load_configurations()
+        self.configuration_combobox.currentIndexChanged.connect(self.config_changed)
+        text_recognition_form.addRow(self.configuration_combobox)
         self.question_text = QtWidgets.QTextEdit()
         self.question_text.setReadOnly(True)
         self.question_text.setMaximumHeight(100)
@@ -64,6 +65,8 @@ class Window(QtWidgets.QWidget):
         layout.addWidget(self.progress_bar)
         layout.addLayout(content_layout)
         buttons_layout = QtWidgets.QHBoxLayout()
+        self.show_screenshot = QtWidgets.QCheckBox('Show Screenshot')
+        buttons_layout.addWidget(self.show_screenshot)
         buttons_layout.addWidget(self.solve_button)
         buttons_layout.addWidget(self.clear_button)
         buttons_layout.addWidget(self.save_button)
@@ -77,11 +80,11 @@ class Window(QtWidgets.QWidget):
         self.clear_button.clicked.connect(self.clear_outputs)
 
         self.s = None
-        self.r = solver.Reader(lang='eng')
+        self.r = solver.Reader()
 
-    def language_changed(self):
-        index = self.language_combobox.currentIndex()
-        self.r.set_language(languajes[index])
+    def config_changed(self):
+        index = self.configuration_combobox.currentIndex()
+        self.r.set_configuration(self.configurations[index+1])
 
     def clear_outputs(self):
         self.screenshot.clear()
@@ -113,9 +116,10 @@ class Window(QtWidgets.QWidget):
         self.progress_bar.setValue(60)
 
         # Show the screenshot in display
-        pixmap = QtGui.QPixmap(self.s.filepath)
-        pixmap = pixmap.scaledToHeight(370, aspectMode=QtCore.Qt.KeepAspectRatio)
-        self.screenshot.setPixmap(pixmap)
+        if self.show_screenshot.isChecked():
+            pixmap = QtGui.QPixmap(self.s.filepath)
+            pixmap = pixmap.scaledToHeight(370, aspectMode=QtCore.Qt.KeepAspectRatio)
+            self.screenshot.setPixmap(pixmap)
         self.progress_bar.setValue(65)
 
         # Scrap the internet
@@ -142,6 +146,9 @@ class Window(QtWidgets.QWidget):
 
         self.close()
 
+    def load_configurations(self):
+        for c in self.configurations[1:]:
+                self.configuration_combobox.addItem(f'{c[0]} [{c[1]}] ({c[2]})')
 
 if __name__ == "__main__":
 
