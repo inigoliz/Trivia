@@ -107,4 +107,4 @@ venv.bak/
 *.DS_Store
 /.screenshots/*.png
 /.vscode
-*.~lock
+*.~lock.config.csv#
