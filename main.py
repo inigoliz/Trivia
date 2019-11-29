@@ -79,6 +79,8 @@ class Window(QtWidgets.QWidget):
         self.save_button.clicked.connect(self.save_to_samples)
         self.clear_button.clicked.connect(self.clear_outputs)
 
+        self.config_changed()
+        
         self.s = None
         self.r = solver.Reader()
 
